@@ -22,7 +22,7 @@ for d in */; do
     git checkout -b "${GITHUB_BRANCH}"
 
     ##
-    # Install Automerge & Freshness guardian (https://go/github/docs/ci-settings)
+    # Install Dependabot
     ##
     mkdir -p .github/ && touch .github/dependabot.yml
 

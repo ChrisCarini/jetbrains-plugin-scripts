@@ -14,7 +14,7 @@ for d in */; do
   pushd "${d}"
 
   ##
-  # Create the branch we will use
+  # Checkout the default branch
   ##
   MAIN_BRANCH="$(git remote show origin | sed -n '/HEAD branch/s/.*: //p')"
   git checkout "${MAIN_BRANCH}"

@@ -23,9 +23,9 @@ for d in */; do
   git checkout -b "${GITHUB_BRANCH}"
 
   ##
-  # Install Automerge & Freshness guardian (https://go/github/docs/ci-settings)
+  # Install Dependabot
   ##
-  mkdir -p .github/ && touch .github/dependabot.yml
+  mkdir -p .github/workflows/ && touch .github/workflows/update-gradle-wrapper.yml
 
   cat <<"EOF" | perl -pe 'chomp if eof' >.github/workflows/update-gradle-wrapper.yml
 name: Update Gradle Wrapper
