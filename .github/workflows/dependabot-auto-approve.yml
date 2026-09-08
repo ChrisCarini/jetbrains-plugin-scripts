@@ -50,7 +50,7 @@ jobs:
           # Skip if this workflow already approved the PR (e.g. after a reopen).
           existing="$(gh pr view "$PR_URL" \
             --json reviews \
-            --jq '[.reviews[] | select(.author.login == "github-actions" and .state == "APPROVED")] | length')"
+            --jq '[.reviews[] | select(.state == "APPROVED") | select(.author.login == "github-actions" or .author.login == "github-actions[bot]")] | length')"
 
           if [ "$existing" -gt 0 ]; then
             echo "Pull request already approved by this workflow; nothing to do."
