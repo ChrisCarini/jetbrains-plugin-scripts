@@ -1,0 +1,60 @@
+name: 'Approve Dependabot PRs'
+
+# Uses `pull_request_target` so the job has a token with write access even for
+# Dependabot's PRs. Nothing from the pull request is ever checked out, built or
+# executed here: the job only reads trusted event metadata and calls the GitHub
+# API. See
+# https://docs.github.com/en/code-security/dependabot/working-with-dependabot/automating-dependabot-with-github-actions
+on:
+  pull_request_target:
+    # `synchronize` is intentionally omitted: an approval already applies to the
+    # PR, and re-approving on every push would only add duplicate reviews.
+    types:
+      - opened
+      - reopened
+
+permissions: {}
+
+concurrency:
+  group: approve-dependabot-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  approve:
+    name: Approve
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Authenticity guards: the PR must have been authored by Dependabot *and*
+    # originate from a branch in this repository (Dependabot never opens PRs
+    # from forks). Titles and labels are attacker-controllable, so they are not
+    # used.
+    if: >-
+      github.event.pull_request.user.login == 'dependabot[bot]' &&
+      github.event.pull_request.user.type == 'Bot' &&
+      github.actor == 'dependabot[bot]' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.draft == false
+    permissions:
+      # Least privilege: enough to submit a review, nothing else.
+      pull-requests: write
+    steps:
+      - name: Approve the pull request
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          # The repository-scoped GITHUB_TOKEN - never the cross-repository
+          # dispatcher PAT.
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          # Skip if this workflow already approved the PR (e.g. after a reopen).
+          existing="$(gh pr view "$PR_URL" \
+            --json reviews \
+            --jq '[.reviews[] | select(.author.login == "github-actions" and .state == "APPROVED")] | length')"
+
+          if [ "$existing" -gt 0 ]; then
+            echo "Pull request already approved by this workflow; nothing to do."
+            exit 0
+          fi
+
+          gh pr review --approve "$PR_URL"

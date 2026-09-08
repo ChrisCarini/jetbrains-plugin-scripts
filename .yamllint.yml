@@ -1,0 +1,7 @@
+# yamllint configuration used by `.github/workflows/lint-and-test.yml`.
+# https://yamllint.readthedocs.io/en/stable/configuration.html
+extends: relaxed
+
+rules:
+  # GitHub Actions workflows regularly need long `if:`/`run:`/description lines.
+  line-length: disable
