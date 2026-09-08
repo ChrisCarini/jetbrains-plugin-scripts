@@ -1,0 +1,19 @@
+# Dependabot configuration:
+# https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference
+
+version: 2
+updates:
+  # Maintain dependencies for GitHub Actions.
+  # `cooldown`-free daily updates keep the SHA pins (and their `# vX.Y.Z`
+  # comments, which Dependabot rewrites for us) current.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+
+  # Maintain dependencies for pip. Unlike the shared template, this repository's
+  # only Python manifest lives in a subdirectory, so the path is nested.
+  - package-ecosystem: "pip"
+    directory: "/update_plugins_for_new_jetbrains_release"
+    schedule:
+      interval: "daily"

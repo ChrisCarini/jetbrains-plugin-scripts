@@ -1,0 +1,48 @@
+name: 'Upgrade IntelliJ Platform version in all plugin repositories'
+
+# Manual only: this workflow never runs on a schedule. Each plugin repository
+# keeps its own daily `update-plugin-platform-version.yml` schedule; this is
+# just the "do it now" button for all of them at once.
+on:
+  workflow_dispatch:
+    inputs:
+      targets:
+        description: "Repositories to dispatch: 'all', or a comma separated list of allowlisted 'ChrisCarini/<repo>' values"
+        required: false
+        default: 'all'
+        type: string
+      dry_run:
+        description: 'Dry run: validate every target and send no dispatch requests'
+        required: false
+        default: true
+        type: boolean
+
+permissions: {}
+
+# Never run two dispatch rounds at once; queue instead of cancelling so an
+# in-flight round is not interrupted half way through its targets.
+concurrency:
+  group: upgrade-all-intellij-plugins
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    name: Dispatch platform version upgrades
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        timeout-minutes: 1
+        with:
+          persist-credentials: false
+
+      - name: Dispatch upgrades
+        env:
+          # Inputs are passed as environment variables (never interpolated into
+          # the shell script body) so they cannot be injected into commands.
+          TARGETS: ${{ inputs.targets }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          # Dedicated cross-repository token; deliberately NOT the token the
+          # downstream upgrade workflows use.
+          GH_TOKEN: ${{ secrets.PLUGIN_WORKFLOW_DISPATCH_TOKEN }}
+        run: ./upgrade_all_intellij_plugins/dispatch-intellij-upgrade.sh

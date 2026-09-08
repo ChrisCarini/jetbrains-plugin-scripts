@@ -1,0 +1,41 @@
+name: 'Lint & Test'
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: lint-and-test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-test:
+    name: Lint and test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        timeout-minutes: 1
+        with:
+          persist-credentials: false
+
+      - name: Lint YAML
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet --disable-pip-version-check yamllint
+          yamllint --strict --format github -c .yamllint.yml .github upgrade_all_intellij_plugins
+
+      - name: Lint shell scripts
+        run: |
+          set -euo pipefail
+          shellcheck upgrade_all_intellij_plugins/dispatch-intellij-upgrade.sh \
+                     upgrade_all_intellij_plugins/tests/test_dispatch_intellij_upgrade.sh
+
+      - name: Run dispatcher tests
+        # Fully mocked: no GitHub API request, dispatch or review is performed.
+        run: ./upgrade_all_intellij_plugins/tests/test_dispatch_intellij_upgrade.sh

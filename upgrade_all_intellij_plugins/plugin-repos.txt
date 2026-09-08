@@ -1,0 +1,33 @@
+# Allowlist of JetBrains/IntelliJ plugin repositories whose existing
+# `.github/workflows/update-plugin-platform-version.yml` workflow may be
+# dispatched by `dispatch-intellij-upgrade.sh`.
+#
+# Provenance: seeded from the "JetBrains Plugin - Build & Release" group of
+# https://github.com/ChrisCarini/github-repo-files-sync `sync.yml` - the group
+# that distributes `update-plugin-platform-version.yml` to each plugin repo.
+# This file is a *manually maintained copy*: it is NOT synchronised. When the
+# sync group changes, update this file too (see README.md).
+#
+# Rules (enforced by the script):
+#   - one `owner/repo` per line
+#   - owner MUST be `ChrisCarini`
+#   - `#` starts a comment, blank lines are ignored
+#
+# `ChrisCarini/sample-intellij-plugin` is deliberately first: it is the test
+# plugin, so its dispatch is the one to inspect first.
+ChrisCarini/sample-intellij-plugin
+
+ChrisCarini/automatic-github-issue-navigation-configuration-jetbrains-plugin
+ChrisCarini/environment-variable-settings-summary-intellij-plugin
+ChrisCarini/example-loc-plugin-config-plugin
+ChrisCarini/git-push-reminder-jetbrains-plugin
+ChrisCarini/ide-feature-usage-tracker-intellij-plugin
+ChrisCarini/intellij-code-exfiltration
+ChrisCarini/intellij-notification-sample
+ChrisCarini/iris-jetbrains-plugin
+ChrisCarini/jetbrains-auto-power-saver
+ChrisCarini/jetbrains-sdk-cleaner
+ChrisCarini/loc-change-count-detector-jetbrains-plugin
+ChrisCarini/logshipper-intellij-plugin
+ChrisCarini/rubber-duck-debugger-intellij-plugin
+ChrisCarini/rust-analyzer-lsp-intellij-plugin
